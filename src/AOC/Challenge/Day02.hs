@@ -22,22 +22,49 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day02 (
-    -- day02a
-  -- , day02b
+      day02a
+    , day02b
   ) where
 
 import           AOC.Prelude
+import           Text.Megaparsec as TM ( Parsec, anySingle, parseMaybe )
+import           Text.Megaparsec.Char       (char, space)
+import           Text.Megaparsec.Char.Lexer (decimal)
 
-day02a :: _ :~> _
+day02a :: [Policy] :~> Int
 day02a = MkSol
-    { sParse = Just
+    { sParse = traverse (parseMaybe policy) . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = validate validatePart1
     }
 
-day02b :: _ :~> _
+day02b :: [Policy] :~> Int
 day02b = MkSol
-    { sParse = Just
+    { sParse = traverse (parseMaybe policy) . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = validate validatePart2
     }
+
+
+data Policy = P Int Int Char String deriving (Show, Eq, Ord, Generic)
+
+type Parser = Parsec Policy String
+
+policy :: Parser Policy
+policy = P <$> decimal
+           <*> (char '-' *> decimal)
+           <*> (space *> anySingle)
+           <*> (char ':' *> space *> AOC.Prelude.some anySingle)
+
+validate :: (Foldable f, Functor f) => (a -> Bool) -> f a -> Maybe Int
+validate f xs = Just $ countTrue (== True) (fmap f xs)
+
+validatePart1 :: Policy -> Bool
+validatePart1 (P pMin pMax pChar password) = n >= pMin && n <= pMax
+  where
+    n = countTrue (== pChar) password
+
+validatePart2 :: Policy -> Bool
+validatePart2 (P pIndex1 pIndex2 pChar password) = n == 1
+  where
+    n = countTrue (== pChar) [password !! (pIndex1 - 1), password !! (pIndex2 - 1)]
