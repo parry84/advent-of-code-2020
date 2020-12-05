@@ -22,22 +22,32 @@
 --     will recommend what should go in place of the underscores.
 
 module AOC.Challenge.Day01 (
-    -- day01a
-  -- , day01b
+      day01a
+    , day01b
   ) where
 
 import           AOC.Prelude
 
-day01a :: _ :~> _
+part1 :: [Int] -> Maybe Int
+part1 xs = case filter (\x -> (2020 - x) `elem` xs) xs of
+  []    -> Nothing
+  (x:_) -> Just $ x * (2020 - x)
+
+part2 :: [Int] -> Maybe Int
+part2 xs = case [ i * j * z | i <- xs, j <- xs, z <- xs, i + j + z == 2020 ] of
+  []    -> Nothing
+  (x:_) -> Just x
+
+day01a :: [Int] :~> Int
 day01a = MkSol
-    { sParse = Just
+    { sParse = traverse readMaybe . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = part1
     }
 
-day01b :: _ :~> _
+day01b :: [Int] :~> Int
 day01b = MkSol
-    { sParse = Just
+    { sParse = traverse readMaybe . lines
     , sShow  = show
-    , sSolve = Just
+    , sSolve = part2
     }
