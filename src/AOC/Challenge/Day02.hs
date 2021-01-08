@@ -27,9 +27,11 @@ module AOC.Challenge.Day02 (
   ) where
 
 import           AOC.Prelude
-import           Text.Megaparsec as TM ( Parsec, anySingle, parseMaybe )
+import           Text.Megaparsec as TM      ( Parsec, anySingle, parseMaybe )
 import           Text.Megaparsec.Char       (char, space)
 import           Text.Megaparsec.Char.Lexer (decimal)
+
+data Policy = P Int Int Char String deriving (Show, Eq, Ord, Generic)
 
 day02a :: [Policy] :~> Int
 day02a = MkSol
@@ -45,8 +47,6 @@ day02b = MkSol
     , sSolve = validate validatePart2
     }
 
-
-data Policy = P Int Int Char String deriving (Show, Eq, Ord, Generic)
 
 type Parser = Parsec Policy String
 
